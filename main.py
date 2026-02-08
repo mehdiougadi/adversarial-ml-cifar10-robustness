@@ -1,7 +1,9 @@
 
+from src.model import create_and_summarize_model
+
 
 def main():
-    pass
+    model = create_and_summarize_model()
 
 
 if __name__ == "__main__":

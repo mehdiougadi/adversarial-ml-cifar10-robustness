@@ -3,5 +3,6 @@ torchvision
 numpy
 matplotlib
 scikit-learn
+
 ruff
 black
