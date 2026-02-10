@@ -5,4 +5,6 @@ data/cifar-10-python.tar.gz
 # Python
 .venv
 __pycache__/
-*.log
+
+# Other
+.ruff_cache

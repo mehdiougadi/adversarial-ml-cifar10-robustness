@@ -4,15 +4,16 @@ Practical Work 2 - Adversarial Machine Learning
 """
 
 import logging
+import sys
 from pathlib import Path
 
 import torch.nn as nn
 import torch.nn.functional as F
 
 logging.basicConfig(
-    filename='model.log',
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("model.log"), logging.StreamHandler(sys.stdout)],
 )
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,9 @@ class SimpleCNN(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(
+            in_channels=32, out_channels=64, kernel_size=3, padding=1
+        )
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.fc1 = nn.Linear(64 * 8 * 8, 128)
         self.fc2 = nn.Linear(128, 10)
@@ -65,11 +68,11 @@ def save_model_summary(model: SimpleCNN, params: int, device: str) -> None:
     logger.info("Saving model summary to file...")
 
     try:
-        results_dir = Path('results')
+        results_dir = Path("results")
         results_dir.mkdir(parents=True, exist_ok=True)
 
-        summary_file = results_dir / 'model_summary.txt'
-        with summary_file.open('w') as f:
+        summary_file = results_dir / "model_summary.txt"
+        with summary_file.open("w") as f:
             f.write("=" * 60 + "\n")
             f.write("Model Architecture Summary\n")
             f.write("=" * 60 + "\n")
@@ -86,7 +89,7 @@ def save_model_summary(model: SimpleCNN, params: int, device: str) -> None:
         raise
 
 
-def create_and_summarize_model(device: str = 'cpu') -> SimpleCNN:
+def create_and_summarize_model(device: str = "cpu") -> SimpleCNN:
     logger.info("Starting model creation and summarization...")
 
     try:
