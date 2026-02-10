@@ -4,17 +4,10 @@ Practical Work 2 - Adversarial Machine Learning
 """
 
 import logging
-import sys
 from pathlib import Path
 
 import torch.nn as nn
 import torch.nn.functional as F
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("model.log"), logging.StreamHandler(sys.stdout)],
-)
 
 logger = logging.getLogger(__name__)
 

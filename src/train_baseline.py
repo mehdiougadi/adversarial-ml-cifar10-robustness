@@ -4,7 +4,6 @@ Practical Work 2 - Adversarial Machine Learning
 """
 
 import logging
-import sys
 from pathlib import Path
 
 import torch
@@ -19,12 +18,6 @@ from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 
 from src.model import get_model
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("./results/logs/train_baseline.log"), logging.StreamHandler(sys.stdout)],
-)
 
 logger = logging.getLogger(__name__)
 
@@ -285,7 +278,7 @@ def save_model(model, device):
         raise
 
 
-def train_baseline_model(device="cpu", epochs=5, batch_size=64, lr=0.001):
+def train_baseline_model(model=None, device="cpu", epochs=5, batch_size=64, lr=0.001):
     logger.info("Starting baseline training pipeline...")
 
     try:
@@ -295,7 +288,9 @@ def train_baseline_model(device="cpu", epochs=5, batch_size=64, lr=0.001):
             train_data, val_data, test_data, batch_size
         )
 
-        model = get_model(device)
+        if model is None:
+            model = get_model(device)
+
         training_history = train_model(
             model, train_loader, val_loader, device, epochs, lr
         )
