@@ -155,7 +155,11 @@ def train_model(model, train_loader, val_loader, device, epochs=5, lr=0.001):
             val_accuracies.append(val_acc)
 
             logger.info(
-                f"Epoch [{epoch+1}/{epochs}] - Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%"
+                f"Epoch [{epoch+1}/{epochs}] - "
+                f"Train Loss: {train_loss:.4f}, "
+                f"Train Acc: {train_acc:.2f}%, "
+                f"Val Loss: {val_loss:.4f}, "
+                f"Val Acc: {val_acc:.2f}%"
             )
 
         logger.info("Model training completed!")
@@ -235,15 +239,18 @@ def save_results(metrics, training_history):
 
             f.write("Training Results:\n")
             f.write(
-                f"  Final Train Accuracy: {training_history['train_accuracies'][-1]:.2f}%\n"
+                f"  Final Train Accuracy: "
+                f"{training_history['train_accuracies'][-1]:.2f}%\n"
             )
             f.write(
-                f"  Final Val Accuracy: {training_history['val_accuracies'][-1]:.2f}%\n\n"
+                f"  Final Val Accuracy: "
+                f"{training_history['val_accuracies'][-1]:.2f}%\n\n"
             )
 
             f.write("Test Performance Metrics:\n")
             f.write(
-                f"  Accuracy: {metrics['accuracy']:.4f} ({metrics['accuracy']*100:.2f}%)\n"
+                f"  Accuracy: {metrics['accuracy']:.4f} "
+                f"({metrics['accuracy']*100:.2f}%)\n"
             )
             f.write(f"  Precision: {metrics['precision']:.4f}\n")
             f.write(f"  Recall: {metrics['recall']:.4f}\n")

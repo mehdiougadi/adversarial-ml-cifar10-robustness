@@ -1,5 +1,5 @@
 """
-CNN Model Architecture for CIFAR-10 Classification
+CNN Model Architecture for CIfunctionalAR-10 Classification
 Practical Work 2 - Adversarial Machine Learning
 """
 
@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional as functional
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +24,10 @@ class SimpleCNN(nn.Module):
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
+        x = self.pool(functional.relu(self.conv1(x)))
+        x = self.pool(functional.relu(self.conv2(x)))
         x = x.view(-1, 64 * 8 * 8)
-        x = F.relu(self.fc1(x))
+        x = functional.relu(self.fc1(x))
         return self.fc2(x)
 
 

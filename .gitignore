@@ -4,7 +4,7 @@ data/cifar-10-python.tar.gz
 
 # Python
 .venv
-__pycache__/
+**__pycache__/
 
 # Other
 .ruff_cache
