@@ -466,18 +466,20 @@ def run_poisoning_experiment(
             logger.info(f"Testing with {poison_level*100}% label poisoning")
             train_loader, val_loader, test_loader = load_and_poison_data(poison_level)
 
+            poison_model = get_model(device)
+
             training_history = train_poisoned_model(
-                model, train_loader, val_loader, device, epochs=epochs
+                poison_model, train_loader, val_loader, device, epochs=epochs
             )
 
-            metrics = evaluate_poisoned_model(model, test_loader, device)
+            metrics = evaluate_poisoned_model(poison_model, test_loader, device)
 
             results_dict[poison_level] = {**metrics, **training_history}
 
             model_path = Path(
                 f"results/pth_files/poisoned_model_{int(poison_level*100)}pct.pth"
             )
-            torch.save(model.state_dict(), model_path)
+            torch.save(poison_model.state_dict(), model_path)
             logger.info(f"Model saved to {model_path}")
 
             if poison_level == 0.0 and clean_accuracy is None:

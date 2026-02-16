@@ -488,6 +488,7 @@ def run_adversarial_training_defense(
 
         logger.info("Training adversarially robust model...")
         defended_model = get_model(device)
+        defended_model.load_state_dict(model.state_dict())
 
         training_history = adversarial_training(
             defended_model, train_loader, val_loader, device, epsilon, epochs, lr
