@@ -272,7 +272,7 @@ def save_model(model, device):
     logger.info("Saving trained model...")
 
     try:
-        results_dir = Path("results")
+        results_dir = Path("results/pth_files")
         results_dir.mkdir(parents=True, exist_ok=True)
 
         model_path = results_dir / "baseline_model.pth"

@@ -4,6 +4,7 @@ from pathlib import Path
 from src.fgsm_attack import run_fgsm_attack
 from src.model import create_and_summarize_model
 from src.pgd_attack import run_pgd_attack
+from src.poisoning_attack import run_poisoning_experiment
 from src.train_baseline import train_baseline_model
 
 
@@ -29,6 +30,7 @@ def main():
     )
     run_fgsm_attack(epsilon_values=[0.0, 0.01, 0.05, 0.1, 0.2])
     run_pgd_attack(epsilon_values=[0.0, 0.01, 0.03, 0.05])
+    run_poisoning_experiment(poison_levels=[0.0, 0.05, 0.15])
 
 
 if __name__ == "__main__":

@@ -384,7 +384,7 @@ def save_comparison_results(
 
 
 def run_pgd_attack(
-    model_path: str = "results/baseline_model.pth",
+    model_path: str = "results/pth_files/baseline_model.pth",
     device: str = "cpu",
     epsilon_values: list[float] | None = None,
     alpha: float = 0.01,
