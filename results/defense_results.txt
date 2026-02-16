@@ -1,16 +1,13 @@
 ================================================================================
-Section 3: Data Poisoning Attack Results
+Section 4: Adversarial Training Defense Results
 ================================================================================
 
-Label-Flipping Poisoning Experiment
+Comparison: Baseline vs Adversarially Trained Model
 --------------------------------------------------------------------------------
 
-Baseline (Clean) Accuracy: 0.6956 (69.56%)
-
-Poison Level    Accuracy     Accuracy Drop   Drop %    
+Metric                    Baseline        Defended        Change         
 --------------------------------------------------------------------------------
-0%             0.6956       0.0000          0.00      %
-5%             0.6505       0.0451          6.48      %
-15%             0.5956       0.1000          14.38     %
+Clean Accuracy            0.5956          0.2164          -0.3792
+Robust Accuracy (eps=0.03) 0.2137          0.5643          +0.3505
 
 ================================================================================

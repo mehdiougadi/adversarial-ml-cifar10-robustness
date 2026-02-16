@@ -384,7 +384,7 @@ def save_comparison_results(
 
 
 def run_pgd_attack(
-    model_path: str = "results/pth_files/baseline_model.pth",
+    model=None,
     device: str = "cpu",
     epsilon_values: list[float] | None = None,
     alpha: float = 0.01,
@@ -393,15 +393,15 @@ def run_pgd_attack(
 ) -> list[dict]:
     logger.info("Starting PGD Attack Pipeline...")
 
+    if model is None:
+        model = get_model(device)
+
     if epsilon_values is None:
         epsilon_values = [0.0, 0.01, 0.03, 0.05]
 
     try:
         figures_dir = Path("results/pgd_figures/")
         figures_dir.mkdir(parents=True, exist_ok=True)
-
-        model = get_model(device)
-        model.load_state_dict(torch.load(model_path, map_location=device))
         model.eval()
 
         transform = transforms.Compose(

@@ -426,12 +426,16 @@ def save_poisoning_results(
 
 
 def run_poisoning_experiment(
+    model=None,
     device: str = "cpu",
     poison_levels: list = None,
     epochs: int = 5,
     clean_baseline_path: str = "results/baseline_results.txt",
 ):
     logger.info("Starting Data Poisoning Attack Pipeline...")
+
+    if model is None:
+        model = get_model(device)
 
     if poison_levels is None:
         poison_levels = [0.0, 0.05, 0.15]
@@ -462,7 +466,6 @@ def run_poisoning_experiment(
             logger.info(f"Testing with {poison_level*100}% label poisoning")
             train_loader, val_loader, test_loader = load_and_poison_data(poison_level)
 
-            model = get_model(device)
             training_history = train_poisoned_model(
                 model, train_loader, val_loader, device, epochs=epochs
             )

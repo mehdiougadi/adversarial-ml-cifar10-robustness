@@ -1,5 +1,7 @@
 import logging
+from pathlib import Path
 
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -7,12 +9,12 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 
+from src.model import get_model
+
 logger = logging.getLogger(__name__)
 
 
 def fgsm_attack(image: torch.Tensor, epsilon: float, data_grad: torch.Tensor):
-    logger.info(f"Generating FGSM adversarial examples with epsilon={epsilon}")
-
     try:
         sign_data_grad = data_grad.sign()
         perturbed_image = image + epsilon * sign_data_grad
@@ -246,17 +248,274 @@ def evaluate_on_adversarial_data(model, test_loader, device, epsilon=0.03):
         raise
 
 
-def plot_defense_comparison():
-    pass
+def plot_defense_comparison(
+    baseline_results: dict,
+    defended_results: dict,
+    save_path: str = "results/defense_figures/defense_comparison.png",
+):
+    logger.info("Creating defense comparison plot...")
+
+    try:
+        categories = ["Clean Accuracy", "Robust Accuracy\n(eps=0.03)"]
+
+        baseline_values = [
+            baseline_results["clean_accuracy"],
+            baseline_results["robust_accuracy"],
+        ]
+
+        defended_values = [
+            defended_results["clean_accuracy"],
+            defended_results["robust_accuracy"],
+        ]
+
+        x = range(len(categories))
+        width = 0.35
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        bars1 = ax.bar(
+            [i - width / 2 for i in x],
+            baseline_values,
+            width,
+            label="Baseline Model",
+            color="#e74c3c",
+            alpha=0.8,
+            edgecolor="black",
+        )
+
+        bars2 = ax.bar(
+            [i + width / 2 for i in x],
+            defended_values,
+            width,
+            label="Adversarially Trained",
+            color="#2ecc71",
+            alpha=0.8,
+            edgecolor="black",
+        )
+
+        for bars in [bars1, bars2]:
+            for bar in bars:
+                height = bar.get_height()
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2.0,
+                    height,
+                    f"{height:.3f}",
+                    ha="center",
+                    va="bottom",
+                    fontsize=11,
+                    fontweight="bold",
+                )
+
+        ax.set_ylabel("Accuracy", fontsize=12)
+        ax.set_title(
+            "Adversarial Training Defense: Before vs After",
+            fontsize=14,
+            fontweight="bold",
+        )
+        ax.set_xticks(x)
+        ax.set_xticklabels(categories, fontsize=11)
+        ax.legend(fontsize=11)
+        ax.set_ylim([0, 1])
+        ax.grid(True, alpha=0.3, axis="y")
+
+        plt.tight_layout()
+        save_dir = Path(save_path).parent
+        save_dir.mkdir(parents=True, exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        plt.close()
+
+        logger.info(f"Defense comparison plot saved to {save_path}")
+
+    except Exception as e:
+        logger.error(f"Error creating defense comparison plot: {e}")
+        raise
 
 
-def plot_training_curves():
-    pass
+def plot_training_curves(
+    training_history: dict,
+    save_path: str = "results/defense_figures/adversarial_training_curves.png",
+):
+    logger.info("Creating adversarial training curves...")
+
+    try:
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+        epochs = range(1, len(training_history["train_accuracies"]) + 1)
+
+        axes[0].plot(
+            epochs,
+            training_history["train_accuracies"],
+            "o-",
+            label="Train Accuracy",
+            linewidth=2,
+            markersize=6,
+            color="#3498db",
+        )
+        axes[0].plot(
+            epochs,
+            training_history["val_accuracies"],
+            "s-",
+            label="Val Accuracy",
+            linewidth=2,
+            markersize=6,
+            color="#e74c3c",
+        )
+        axes[0].set_xlabel("Epoch", fontsize=11)
+        axes[0].set_ylabel("Accuracy (%)", fontsize=11)
+        axes[0].set_title(
+            "Adversarial Training: Accuracy", fontsize=12, fontweight="bold"
+        )
+        axes[0].legend(fontsize=10)
+        axes[0].grid(True, alpha=0.3)
+
+        axes[1].plot(
+            epochs,
+            training_history["train_losses"],
+            "o-",
+            label="Train Loss",
+            linewidth=2,
+            markersize=6,
+            color="#3498db",
+        )
+        axes[1].plot(
+            epochs,
+            training_history["val_losses"],
+            "s-",
+            label="Val Loss",
+            linewidth=2,
+            markersize=6,
+            color="#e74c3c",
+        )
+        axes[1].set_xlabel("Epoch", fontsize=11)
+        axes[1].set_ylabel("Loss", fontsize=11)
+        axes[1].set_title("Adversarial Training: Loss", fontsize=12, fontweight="bold")
+        axes[1].legend(fontsize=10)
+        axes[1].grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        save_dir = Path(save_path).parent
+        save_dir.mkdir(parents=True, exist_ok=True)
+        plt.savefig(save_path, dpi=150, bbox_inches="tight")
+        plt.close()
+
+        logger.info(f"Training curves saved to {save_path}")
+
+    except Exception as e:
+        logger.error(f"Error creating training curves: {e}")
+        raise
 
 
-def save_defense_results():
-    pass
+def save_defense_results(
+    baseline_results: dict,
+    defended_results: dict,
+    save_path: str = "results/defense_results.txt",
+):
+    logger.info("Saving defense results to file...")
+
+    try:
+        save_dir = Path(save_path).parent
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        with Path.open(save_path, "w", encoding="utf-8") as f:
+            f.write("=" * 80 + "\n")
+            f.write("Section 4: Adversarial Training Defense Results\n")
+            f.write("=" * 80 + "\n\n")
+
+            f.write("Comparison: Baseline vs Adversarially Trained Model\n")
+            f.write("-" * 80 + "\n\n")
+
+            f.write(
+                f"{'Metric':<25} {'Baseline':<15} {'Defended':<15} " f"{'Change':<15}\n"
+            )
+            f.write("-" * 80 + "\n")
+
+            clean_base = baseline_results["clean_accuracy"]
+            clean_def = defended_results["clean_accuracy"]
+            clean_change = clean_def - clean_base
+
+            f.write(
+                f"{'Clean Accuracy':<25} {clean_base:<15.4f} "
+                f"{clean_def:<15.4f} {clean_change:+.4f}\n"
+            )
+
+            robust_base = baseline_results["robust_accuracy"]
+            robust_def = defended_results["robust_accuracy"]
+            robust_change = robust_def - robust_base
+
+            f.write(
+                f"{'Robust Accuracy (eps=0.03)':<25} {robust_base:<15.4f} "
+                f"{robust_def:<15.4f} {robust_change:+.4f}\n"
+            )
+            f.write("\n" + "=" * 80 + "\n")
+
+        logger.info(f"Defense results saved to {save_path}")
+
+    except Exception as e:
+        logger.error(f"Error saving defense results: {e}")
+        raise
 
 
-def run_adversarial_training_defense():
-    pass
+def run_adversarial_training_defense(
+    model=None,
+    device: str = "cpu",
+    epsilon: float = 0.03,
+    epochs: int = 5,
+    lr: float = 0.001,
+):
+    logger.info("Starting Adversarial Training Defense Pipeline...")
+
+    if model is None:
+        model = get_model(device)
+
+    try:
+        figures_dir = Path("results/defense_figures/")
+        figures_dir.mkdir(parents=True, exist_ok=True)
+
+        train_loader, val_loader, test_loader = load_cifar10_data()
+
+        logger.info("Evaluating baseline model...")
+        model.eval()
+
+        baseline_clean = evaluate_on_clean_data(model, test_loader, device)
+        baseline_robust = evaluate_on_adversarial_data(
+            model, test_loader, device, epsilon
+        )
+
+        baseline_results = {
+            "clean_accuracy": baseline_clean["accuracy"],
+            "robust_accuracy": baseline_robust["accuracy"],
+        }
+
+        logger.info("Training adversarially robust model...")
+        defended_model = get_model(device)
+
+        training_history = adversarial_training(
+            defended_model, train_loader, val_loader, device, epsilon, epochs, lr
+        )
+
+        defended_clean = evaluate_on_clean_data(defended_model, test_loader, device)
+        defended_robust = evaluate_on_adversarial_data(
+            defended_model, test_loader, device, epsilon
+        )
+
+        defended_results = {
+            "clean_accuracy": defended_clean["accuracy"],
+            "robust_accuracy": defended_robust["accuracy"],
+        }
+
+        plot_defense_comparison(baseline_results, defended_results)
+        plot_training_curves(training_history)
+        save_defense_results(baseline_results, defended_results)
+
+        model_path = Path("results/pth_files/adversarially_trained_model.pth")
+        model_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(defended_model.state_dict(), model_path)
+        logger.info(f"Adversarially trained model saved to {model_path}")
+
+        logger.info("Adversarial Training Defense Pipeline Completed!")
+
+        return baseline_results, defended_results, training_history
+
+    except Exception as e:
+        logger.error(f"Error in adversarial training defense pipeline: {e}")
+        raise
