@@ -3,8 +3,8 @@ from pathlib import Path
 
 from src.fgsm_attack import run_fgsm_attack
 from src.model import create_and_summarize_model
-from src.train_baseline import train_baseline_model
 from src.pgd_attack import run_pgd_attack
+from src.train_baseline import train_baseline_model
 
 
 def setup_logging():
